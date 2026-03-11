@@ -155,6 +155,10 @@
         <div class="value" id="score">0</div>
       </div>
       <div class="panel-box">
+        <h3>最高分</h3>
+        <div class="value" id="high-score">0</div>
+      </div>
+      <div class="panel-box">
         <h3>等级</h3>
         <div class="value" id="level">1</div>
       </div>
@@ -270,10 +274,15 @@
 
     // DOM 元素
     const scoreEl = document.getElementById('score');
+    const highScoreEl = document.getElementById('high-score');
     const levelEl = document.getElementById('level');
     const linesEl = document.getElementById('lines');
     const overlay = document.getElementById('overlay');
     const restartBtn = document.getElementById('restart-btn');
+
+    // 历史最高分（从 localStorage 读取）
+    let highScore = parseInt(localStorage.getItem('tetris-high-score'), 10) || 0;
+    highScoreEl.textContent = highScore;
 
     // ===== 工具函数 =====
 
@@ -382,6 +391,8 @@
     // 游戏结束
     const triggerGameOver = () => {
       gameOver = true;
+      // 游戏结束时持久化最高分
+      localStorage.setItem('tetris-high-score', highScore);
       overlay.classList.add('active');
       cancelAnimationFrame(animationId);
     };
@@ -391,6 +402,11 @@
       scoreEl.textContent = score;
       levelEl.textContent = level;
       linesEl.textContent = lines;
+      // 实时更新最高分（仅更新内存和 DOM，不写 localStorage）
+      if (score > highScore) {
+        highScore = score;
+        highScoreEl.textContent = highScore;
+      }
     };
 
     // ===== 绘制函数 =====
