@@ -569,14 +569,20 @@
     const rotate = () => {
       const newRotation = (currentPiece.rotation + 1) % 4;
       const newMatrix = getRotatedMatrix(currentPiece, newRotation);
-      // 尝试旋转，包含墙踢检测
-      const kicks = [0, -1, 1, -2, 2];
-      for (const kick of kicks) {
-        if (!collides(currentPiece, kick, 0, newMatrix)) {
-          currentPiece.rotation = newRotation;
-          currentPiece.matrix = newMatrix;
-          currentPiece.x += kick;
-          return;
+      // 墙踢偏移表：I 方块需要更大的水平偏移（宽度为4）
+      const xKicks = currentPiece.type === 'I'
+        ? [0, -1, 1, -2, 2, -3, 3]
+        : [0, -1, 1, -2, 2];
+      const yKicks = [0, -1, 1];
+      for (const dx of xKicks) {
+        for (const dy of yKicks) {
+          if (!collides(currentPiece, dx, dy, newMatrix)) {
+            currentPiece.rotation = newRotation;
+            currentPiece.matrix = newMatrix;
+            currentPiece.x += dx;
+            currentPiece.y += dy;
+            return;
+          }
         }
       }
     };
